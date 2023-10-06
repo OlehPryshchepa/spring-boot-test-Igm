@@ -6,12 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
 @Slf4j
 public class RetryThirdApiAspect {
+    private static final int BACKOFF_TIME = 2;
+
     @Around("@annotation(retryAnnotation)")
     public ThirdApiResponseDto retryRequest(ProceedingJoinPoint joinPoint,
                                             RetryOnRateLimit retryAnnotation) throws Throwable {
@@ -24,18 +27,15 @@ public class RetryThirdApiAspect {
 
         int retryCount = 0;
 
-        log.info("Aspect on retry third api call started");
-
         while (retryCount <= maxRetryCount) {
             ThirdApiResponseDto response = (ThirdApiResponseDto) joinPoint.proceed();
-            if (response.getStatus() == 200) {
-                log.info("Request successful");
+            if (response.getStatus() == HttpStatus.OK) {
                 return response;
-            } else if (response.getStatus() == 429) {
+            } else if (response.getStatus() == HttpStatus.TOO_MANY_REQUESTS) {
                 log.info("Third api response with: status code = " + response.getStatus() + " | "
                         + " data: " + response.getData() + ". Retrying in " + delay + "ms...");
                 Thread.sleep(delay);
-                delay *= 2;
+                delay *= BACKOFF_TIME;
                 retryCount++;
             } else {
                 log.info("Unexpected response: " + response.getStatus());
@@ -44,7 +44,7 @@ public class RetryThirdApiAspect {
         }
 
         log.info("Max retry attempts reached. Giving up.");
-        return new ThirdApiResponseDto(500, "Internal server error");
+        return new ThirdApiResponseDto("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 

@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 
 @Service
 public class HtmlGeneratorServiceImpl implements HtmlGeneratorService {
+    private static final int DELAY = 1000;
     private ExecutorService executor
             = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -17,7 +18,7 @@ public class HtmlGeneratorServiceImpl implements HtmlGeneratorService {
     public CompletableFuture<String> generateStartHtml() {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(DELAY);
                 return "<html><body>";
             } catch (InterruptedException e) {
                 throw new RuntimeException("Thread interrupted while generating "
@@ -30,7 +31,7 @@ public class HtmlGeneratorServiceImpl implements HtmlGeneratorService {
     public CompletableFuture<String> generateContentHtml() {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(DELAY);
                 return "<h1>Hello, Igm.Technology! Today is %s</h1>".formatted(LocalDateTime.now()
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             } catch (InterruptedException e) {
@@ -44,7 +45,7 @@ public class HtmlGeneratorServiceImpl implements HtmlGeneratorService {
     public CompletableFuture<String> generateEndHtml() {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(DELAY);
                 return "</body></html>";
             } catch (InterruptedException e) {
                 throw new RuntimeException("Thread interrupted while generating "
