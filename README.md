@@ -6,7 +6,7 @@
   <a href="#architecture">Architecture</a> •
   <a href="#technologies">Technologies</a> •
   <a href="#how-to-start-the-program">How to start the program</a> •
-  <a href="#how-to-start-the-program--with-docker">How to start the program</a> 
+  <a href="#how-to-start-the-program--with-docker">How to start the program with docker</a> 
 </p>
 
 ## 📃Description
